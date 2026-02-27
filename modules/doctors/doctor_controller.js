@@ -2,7 +2,9 @@ const service = require("./doctor_service");
 
 exports.getDoctors = async (req, res, next) => {
   try {
-    const data = await service.getDoctors(req.query.specialty);
+    const q = req.query.q || null;
+    const specialty = req.query.specialty || null;
+    const data = await service.getDoctors(q, specialty);
     res.json(data);
   } catch (err) {
     next(err);

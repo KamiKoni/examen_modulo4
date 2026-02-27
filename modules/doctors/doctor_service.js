@@ -75,13 +75,19 @@ exports.deleteDoctor = async (id) => {
 };
 
 // READ
-exports.getDoctors = async (specialty) => {
+exports.getDoctors = async (search, specialty) => {
   let query = "SELECT * FROM doctors";
   const params = [];
-  if (specialty) {
+
+  if (search) {
+    query += " WHERE name LIKE ? OR email LIKE ? OR specialty LIKE ?";
+    const term = `%${search}%`;
+    params.push(term, term, term);
+  } else if (specialty) {
     query += " WHERE specialty = ?";
     params.push(specialty);
   }
+
   const [rows] = await pool.query(query, params);
   return rows;
 };

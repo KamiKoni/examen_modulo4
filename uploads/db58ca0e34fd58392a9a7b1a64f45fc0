@@ -1,0 +1,2 @@
+patient_name,patient_email,patient_phone,patient_address,doctor_name,doctor_email,specialty,appointment_id,appointment_date,treatment_code,treatment_description,treatment_cost,insurance_provider,coverage_percentage,amount_paid
+Test Patient,test@mail.com,3001234567,Test Address,Dr Test,test.doc@mail.com,Testing,APT-TEST,2024-01-01,TRT-001,Test Treatment,100000,TestIns,50,50000

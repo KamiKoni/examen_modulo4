@@ -2,13 +2,33 @@ const pool = require("../../config/mysql");
 const { PatientHistory } = require("../../config/mongo");
 const Joi = require("joi");
 
-// Validation schema
+// Validation schemas
 const patientSchema = Joi.object({
   name: Joi.string().min(2).max(100).required(),
   email: Joi.string().email().required(),
   phone: Joi.string().min(7).max(20).required(),
   address: Joi.string().min(5).max(200).required(),
 });
+
+// For updates, email is not part of the body
+const patientUpdateSchema = Joi.object({
+  name: Joi.string().min(2).max(100).required(),
+  phone: Joi.string().min(7).max(20).required(),
+  address: Joi.string().min(5).max(200).required(),
+});
+
+// GET ALL / SEARCH
+exports.getPatients = async (search) => {
+  let query = "SELECT id, name, email, phone, address FROM patients";
+  const params = [];
+  if (search) {
+    query += " WHERE name LIKE ? OR email LIKE ?";
+    const term = `%${search}%`;
+    params.push(term, term);
+  }
+  const [rows] = await pool.query(query, params);
+  return rows;
+};
 
 // CREATE
 exports.createPatient = async (body) => {
@@ -35,7 +55,7 @@ exports.createPatient = async (body) => {
 
 // UPDATE
 exports.updatePatient = async (email, body) => {
-  const { error } = patientSchema.validate(body);
+  const { error } = patientUpdateSchema.validate(body);
   if (error) throw error;
 
   const { name, phone, address } = body;

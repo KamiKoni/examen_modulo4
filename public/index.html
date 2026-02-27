@@ -5,52 +5,110 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>SaludPlus Demo UI</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    section { margin-bottom: 2rem; }
-    textarea { width: 100%; height: 100px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+    h1 { color: #333; margin-bottom: 20px; }
+    section { background: white; padding: 20px; margin-bottom: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    h2 { color: #0066cc; margin-bottom: 15px; font-size: 1.3rem; }
+    form { display: grid; gap: 10px; margin-bottom: 20px; }
+    input, select, textarea { padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+    button { padding: 10px 15px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    button:hover { background: #0052a3; }
+    button.danger { background: #cc0000; }
+    button.danger:hover { background: #990000; }
+    button.secondary { background: #666; }
+    button.secondary:hover { background: #444; }
+    pre { background: #f0f0f0; padding: 15px; border-radius: 4px; overflow-x: auto; display: none; }
+    pre.show { display: block; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+    th { background: #f0f0f0; font-weight: bold; }
+    tr:hover { background: #f9f9f9; }
+    .actions { display: flex; gap: 5px; }
+    .actions button { padding: 5px 10px; font-size: 0.9rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   </style>
 </head>
 <body>
-  <h1>SaludPlus API demo</h1>
+  <h1>🏥 SaludPlus Healthcare Management</h1>
 
+  <!-- Doctors Section -->
   <section id="doctors">
-    <h2>Doctors</h2>
+    <h2>👨‍⚕️ Doctors</h2>
     <form id="doctor-form">
-      <input name="name" placeholder="Name" required />
-      <input name="email" placeholder="Email" required />
+      <div class="form-row">
+        <input name="name" placeholder="Doctor Name" required />
+        <input name="email" placeholder="Email" required />
+      </div>
       <input name="specialty" placeholder="Specialty" required />
-      <button type="submit">Create</button>
+      <button type="submit">Add Doctor</button>
     </form>
-    <button id="list-doctors">List all</button>
+    <div>
+      <input id="doctor-search" placeholder="Search doctors (name/email/specialty)" />
+      <button id="search-doctors" class="secondary">Search</button>
+      <button id="list-doctors" class="secondary">Refresh List</button>
+    </div>
+    <table id="doctors-table" style="display:none;">
+      <thead>
+        <tr><th>Name</th><th>Email</th><th>Specialty</th><th>Actions</th></tr>
+      </thead>
+      <tbody id="doctors-tbody"></tbody>
+    </table>
     <pre id="doctors-output"></pre>
   </section>
 
+  <!-- Patients Section -->
   <section id="patients">
-    <h2>Patients</h2>
+    <h2>👨‍⚕️ Patients</h2>
     <form id="patient-form">
-      <input name="name" placeholder="Name" required />
-      <input name="email" placeholder="Email" required />
-      <input name="phone" placeholder="Phone" required />
-      <input name="address" placeholder="Address" required />
-      <button type="submit">Create</button>
+      <div class="form-row">
+        <input name="name" placeholder="Patient Name" required />
+        <input name="email" placeholder="Email" required />
+      </div>
+      <div class="form-row">
+        <input name="phone" placeholder="Phone" required />
+        <input name="address" placeholder="Address" required />
+      </div>
+      <button type="submit">Add Patient</button>
     </form>
-    <button id="get-history">Get history</button>
-    <input id="history-email" placeholder="Patient Email" />
+    <div>
+      <input id="patient-search" placeholder="Search patients (name/email)" />
+      <button id="search-patients" class="secondary">Search</button>
+      <button id="list-patients" class="secondary">Refresh List</button>
+    </div>
+    <table id="patients-table" style="display:none;">
+      <thead>
+        <tr><th>Name</th><th>Email</th><th>Phone</th><th>Address</th><th>Actions</th></tr>
+      </thead>
+      <tbody id="patients-tbody"></tbody>
+    </table>
     <pre id="patients-output"></pre>
   </section>
 
+  <!-- Reports Section -->
   <section id="reports">
-    <h2>Reports</h2>
-    <button id="revenue-report">Get revenue</button>
-    <input id="start-date" type="date" /> to <input id="end-date" type="date" />
+    <h2>📊 Reports</h2>
+    <div class="form-row">
+      <div>
+        <label>Start Date:</label>
+        <input id="start-date" type="date" />
+      </div>
+      <div>
+        <label>End Date:</label>
+        <input id="end-date" type="date" />
+      </div>
+    </div>
+    <button id="revenue-report" class="secondary">Get Revenue Report</button>
     <pre id="reports-output"></pre>
   </section>
 
+  <!-- Migration Section -->
   <section id="migration">
-    <h2>Migration</h2>
-    <form id="migration-form" enctype="multipart/form-data">
-      <input type="file" name="file" />
-      <button type="submit">Upload Excel</button>
+    <h2>📤 Data Migration</h2>
+    <form id="migration-form">
+      <label>Upload CSV or Excel file:</label>
+      <input type="file" name="file" accept=".csv,.xlsx" required />
+      <button type="submit">Upload & Migrate</button>
     </form>
     <pre id="migration-output"></pre>
   </section>

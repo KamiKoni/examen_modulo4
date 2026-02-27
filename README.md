@@ -73,15 +73,19 @@ The API listens on `http://localhost:3000`.
 ## Endpoints
 
 ### Doctors
-- `GET /api/doctors` – list doctors (use `?specialty=` to filter)
+- `GET /api/doctors` – list doctors. Supports optional query parameters:
+  - `?specialty=` for exact specialty filter
+  - `?q=` to search name, email or specialty (substring match)
+  You can supply a single field value and it will return matching records.
 - `GET /api/doctors/:id` – get one doctor
 - `POST /api/doctors` – create doctor (body: `name,email,specialty`)
 - `PUT /api/doctors/:id` – update doctor
 - `DELETE /api/doctors/:id` – remove doctor
 
 ### Patients
+- `GET /api/patients` – list patients; optionally use `?q=` to search by name or email.
 - `POST /api/patients` – create patient (`name,email,phone,address`)
-- `PUT /api/patients/:email` – update
+- `PUT /api/patients/:email` – update (name, phone, address)
 - `DELETE /api/patients/:email` – delete
 - `GET /api/patients/:email/history` – get history from Mongo
 
@@ -96,7 +100,7 @@ The API listens on `http://localhost:3000`.
 
 ## Frontend
 
-A very small static frontend is served from `/public/index.html` that lets you hit the API end-to-end. Open `http://localhost:3000/` in your browser.
+A very small static frontend is served from `/public/index.html` that lets you hit the API end-to-end. It now includes search boxes above the doctors and patients tables; you can type a partial name, email or specialty and click **Search** to filter. Open `http://localhost:3000/` in your browser.
 
 ## Development Notes
 

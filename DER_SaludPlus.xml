@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-02-27T17:15:00.000Z" agent="Mozilla/5.0" version="24.0.0" etag="SaludPlus_DER">
+  <diagram id="SaludPlus_Database" name="SaludPlus DER">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- PATIENTS Table -->
+        <mxCell id="patients_entity" value="patients" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="100" width="200" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="patients_head" value="Patients" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=1;" vertex="1" parent="patients_entity">
+          <mxGeometry y="30" width="200" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="patients_head_label" value="PK: id (INT)" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;fontStyle=1;overflow=hidden;whiteSpace=wrap;text =" vertex="1" parent="patients_head">
+          <mxGeometry width="200" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="patients_row1" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="patients_entity">
+          <mxGeometry y="60" width="200" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="patients_row1_label" value="name: VARCHAR(100) NOT NULL" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="patients_row1">
+          <mxGeometry width="200" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="patients_row2" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="patients_entity">
+          <mxGeometry y="85" width="200" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="patients_row2_label" value="email: VARCHAR(100) UNIQUE" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="patients_row2">
+          <mxGeometry width="200" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="patients_row3" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="patients_entity">
+          <mxGeometry y="110" width="200" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="patients_row3_label" value="phone: VARCHAR(20)" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="patients_row3">
+          <mxGeometry width="200" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="patients_row4" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="patients_entity">
+          <mxGeometry y="135" width="200" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="patients_row4_label" value="address: VARCHAR(200)" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="patients_row4">
+          <mxGeometry width="200" height="25" as="geometry"/>
+        </mxCell>
+        
+        <!-- DOCTORS Table -->
+        <mxCell id="doctors_entity" value="doctors" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;" vertex="1" parent="1">
+          <mxGeometry x="550" y="100" width="200" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="doctors_head" value="Doctors" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=1;" vertex="1" parent="doctors_entity">
+          <mxGeometry y="30" width="200" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="doctors_head_label" value="PK: id (INT)" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;fontStyle=1;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="doctors_head">
+          <mxGeometry width="200" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="doctors_row1" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="doctors_entity">
+          <mxGeometry y="60" width="200" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="doctors_row1_label" value="name: VARCHAR(100) NOT NULL" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="doctors_row1">
+          <mxGeometry width="200" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="doctors_row2" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="doctors_entity">
+          <mxGeometry y="85" width="200" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="doctors_row2_label" value="email: VARCHAR(100) UNIQUE" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="doctors_row2">
+          <mxGeometry width="200" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="doctors_row3" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="doctors_entity">
+          <mxGeometry y="110" width="200" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="doctors_row3_label" value="specialty: VARCHAR(100)" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="doctors_row3">
+          <mxGeometry width="200" height="30" as="geometry"/>
+        </mxCell>
+        
+        <!-- INSURANCES Table -->
+        <mxCell id="insurances_entity" value="insurances" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="450" width="230" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="insurances_head" value="Insurances" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=1;" vertex="1" parent="insurances_entity">
+          <mxGeometry y="30" width="230" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="insurances_head_label" value="PK: id (INT)" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;fontStyle=1;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="insurances_head">
+          <mxGeometry width="230" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="insurances_row1" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="insurances_entity">
+          <mxGeometry y="60" width="230" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="insurances_row1_label" value="name: VARCHAR(100) NOT NULL UNIQUE" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="insurances_row1">
+          <mxGeometry width="230" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="insurances_row2" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="insurances_entity">
+          <mxGeometry y="90" width="230" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="insurances_row2_label" value="coverage_percentage: DECIMAL(5,2)" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="insurances_row2">
+          <mxGeometry width="230" height="30" as="geometry"/>
+        </mxCell>
+        
+        <!-- APPOINTMENTS Table -->
+        <mxCell id="appointments_entity" value="appointments" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="280" width="270" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_head" value="Appointments" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=1;" vertex="1" parent="appointments_entity">
+          <mxGeometry y="30" width="270" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_head_label" value="PK: id (INT)" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;fontStyle=1;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="appointments_head">
+          <mxGeometry width="270" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_row1" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="appointments_entity">
+          <mxGeometry y="60" width="270" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_row1_label" value="appointment_id: VARCHAR(50) NOT NULL" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="appointments_row1">
+          <mxGeometry width="270" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_row2" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="appointments_entity">
+          <mxGeometry y="85" width="270" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_row2_label" value="appointment_date: DATE NOT NULL" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="appointments_row2">
+          <mxGeometry width="270" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_row3" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="appointments_entity">
+          <mxGeometry y="110" width="270" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_row3_label" value="FK: patient_id → patients.id" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="appointments_row3">
+          <mxGeometry width="270" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_row4" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="appointments_entity">
+          <mxGeometry y="135" width="270" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_row4_label" value="FK: doctor_id → doctors.id" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="appointments_row4">
+          <mxGeometry width="270" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_row5" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="appointments_entity">
+          <mxGeometry y="160" width="270" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_row5_label" value="FK: insurance_id → insurances.id (NULL)" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="appointments_row5">
+          <mxGeometry width="270" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_row6" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="appointments_entity">
+          <mxGeometry y="185" width="270" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_row6_label" value="treatment_code: VARCHAR(50)" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;text=" vertex="1" parent="appointments_row6">
+          <mxGeometry width="270" height="23" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_row7" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="appointments_entity">
+          <mxGeometry y="208" width="270" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="appointments_row7_label" value="treatment_description: TEXT / amount_paid: DECIMAL(10,2)" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;whiteSpace=wrap;fontSize=11;text=" vertex="1" parent="appointments_row7">
+          <mxGeometry width="270" height="22" as="geometry"/>
+        </mxCell>
+        
+        <!-- Relationships -->
+        <!-- Patients to Appointments (1:N) -->
+        <mxCell id="rel_patients_appointments" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=0;strokeColor=#000000;endArrow=crow;endFill=1;startArrow=none;" edge="1" parent="1" source="patients_entity" target="appointments_entity">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="150" y="260" as="sourcePoint"/>
+            <mxPoint x="350" y="290" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_patients_label" value="1:N" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="rel_patients_appointments">
+          <mxGeometry x="-40" y="-10" as="geometry"/>
+        </mxCell>
+        
+        <!-- Doctors to Appointments (1:N) -->
+        <mxCell id="rel_doctors_appointments" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=0;strokeColor=#000000;endArrow=crow;endFill=1;startArrow=none;" edge="1" parent="1" source="doctors_entity" target="appointments_entity">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="650" y="260" as="sourcePoint"/>
+            <mxPoint x="500" y="290" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_doctors_label" value="1:N" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="rel_doctors_appointments">
+          <mxGeometry x="40" y="-10" as="geometry"/>
+        </mxCell>
+        
+        <!-- Insurances to Appointments (1:N) -->
+        <mxCell id="rel_insurances_appointments" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;strokeColor=#666666;endArrow=crow;endFill=1;startArrow=none;" edge="1" parent="1" source="insurances_entity" target="appointments_entity">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_insurances_label" value="1:N (optional)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;" vertex="1" connectable="0" parent="rel_insurances_appointments">
+          <mxGeometry x="0" y="20" as="geometry"/>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

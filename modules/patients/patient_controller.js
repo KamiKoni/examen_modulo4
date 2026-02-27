@@ -1,5 +1,15 @@
 const service = require("./patient_service");
 
+exports.getPatients = async (req, res, next) => {
+  try {
+    const q = req.query.q || null;
+    const data = await service.getPatients(q);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.getHistory = async (req, res, next) => {
   try {
     const data = await service.getHistory(req.params.email);
