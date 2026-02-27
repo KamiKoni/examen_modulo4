@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>SaludPlus Demo UI</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    section { margin-bottom: 2rem; }
+    textarea { width: 100%; height: 100px; }
+  </style>
+</head>
+<body>
+  <h1>SaludPlus API demo</h1>
+
+  <section id="doctors">
+    <h2>Doctors</h2>
+    <form id="doctor-form">
+      <input name="name" placeholder="Name" required />
+      <input name="email" placeholder="Email" required />
+      <input name="specialty" placeholder="Specialty" required />
+      <button type="submit">Create</button>
+    </form>
+    <button id="list-doctors">List all</button>
+    <pre id="doctors-output"></pre>
+  </section>
+
+  <section id="patients">
+    <h2>Patients</h2>
+    <form id="patient-form">
+      <input name="name" placeholder="Name" required />
+      <input name="email" placeholder="Email" required />
+      <input name="phone" placeholder="Phone" required />
+      <input name="address" placeholder="Address" required />
+      <button type="submit">Create</button>
+    </form>
+    <button id="get-history">Get history</button>
+    <input id="history-email" placeholder="Patient Email" />
+    <pre id="patients-output"></pre>
+  </section>
+
+  <section id="reports">
+    <h2>Reports</h2>
+    <button id="revenue-report">Get revenue</button>
+    <input id="start-date" type="date" /> to <input id="end-date" type="date" />
+    <pre id="reports-output"></pre>
+  </section>
+
+  <section id="migration">
+    <h2>Migration</h2>
+    <form id="migration-form" enctype="multipart/form-data">
+      <input type="file" name="file" />
+      <button type="submit">Upload Excel</button>
+    </form>
+    <pre id="migration-output"></pre>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
