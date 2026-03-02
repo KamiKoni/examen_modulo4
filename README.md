@@ -80,7 +80,7 @@ The API listens on `http://localhost:3001` (or the port set in `.env`).
 - `GET /api/suppliers/:id` – get supplier
 - `POST /api/suppliers` – create (`supplier_name,supplier_email`)
 - `PUT /api/suppliers/:id` – update
-- `DELETE /api/suppliers/:id` – delete
+- `DELETE /api/suppliers/:id` – delete (will respond with **409 Conflict** if the supplier still has products in the catalog due to foreign-key constraints)
 
 ### Products
 - `GET /api/products` – list products; optional `?q=` to search by name or SKU.

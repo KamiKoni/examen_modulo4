@@ -1,83 +1,42 @@
-const pool = require("../../config/mysql");
-const Joi = require("joi");
-
-// Validation schema
-const customerSchema = Joi.object({
-  customer_name: Joi.string().min(2).max(100).required(),
-  customer_email: Joi.string().email().required(),
-  customer_direction: Joi.string().min(2).max(100).required(),
-});
+const Customer = require("../../models/customer");
 
 // CREATE
 exports.createcustomer = async (body) => {
-  const { error } = customerSchema.validate(body);
-  if (error) throw error;
-
-  const { customer_name, customer_email, customer_direction } = body;
-  await pool.query(
-    `INSERT INTO customers (customer_name, customer_email,customer_direction)
-     VALUES (?,?,?)
-     ON DUPLICATE KEY UPDATE customer_name=customer_name`,
-    [customer_name, customer_email, customer_direction]
-  );
-
-  return { message: "customer created or already exists" };
+  if (!body.name || !body.email) throw new Error("Missing required fields: name and email");
+  const customer = new Customer(body);
+  await customer.save();
+  return { message: "customer created", customer };
 };
 
 // UPDATE
 exports.updatecustomer = async (id, body) => {
-  const { error } = customerSchema.validate(body);
-  if (error) throw error;
-
-  const { customer_name, customer_direction } = body;
-
-  const [old] = await pool.query("SELECT * FROM customers WHERE id = ?", [id]);
-  if (!old[0]) return null;
-
-  const oldcustomer_name = old[0].customer_name;
-
-  await pool.query(
-    `UPDATE customers SET customer_name=?, customer_direction=? WHERE id=?`,
-    [customer_name, customer_direction, id]
-  );
-
-
-  return { message: "customer updated" };
+  const updated = await Customer.findByIdAndUpdate(id, body, { new: true });
+  if (!updated) return null;
+  return { message: "customer updated", customer: updated };
 };
 
 // DELETE
 exports.deletecustomer = async (id) => {
-  const [old] = await pool.query("SELECT * FROM customers WHERE id = ?", [id]);
-  if (!old[0]) return null;
-
-  const customerName = old[0].customer_name;
-
-  await pool.query("DELETE FROM customers WHERE id = ?", [id]);
-
-
-
+  const deleted = await Customer.findByIdAndDelete(id);
+  if (!deleted) return null;
   return { message: "customer deleted" };
 };
 
 // READ
-exports.getcustomers = async (search, customer_direction) => {
-  let query = "SELECT * FROM customers";
-  const params = [];
-
+exports.getcustomers = async (search, address) => {
+  const filter = {};
   if (search) {
-    query += " WHERE name LIKE ? OR customer_email LIKE ? OR customer_direction LIKE ?";
-    const term = `%${search}%`;
-    params.push(term, term, term);
-  } else if (customer_direction) {
-    query += " WHERE customer_direction = ?";
-    params.push(customer_direction);
+    filter.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+      { address: { $regex: search, $options: "i" } }
+    ];
+  } else if (address) {
+    filter.address = address;
   }
-
-  const [rows] = await pool.query(query, params);
-  return rows;
+  return await Customer.find(filter);
 };
 
 exports.getcustomerById = async (id) => {
-  const [rows] = await pool.query("SELECT * FROM customers WHERE id = ?", [id]);
-  return rows[0];
+  return await Customer.findById(id);
 };

@@ -134,6 +134,7 @@ document.getElementById("supplier-form").addEventListener("submit", async (e) =>
       body: JSON.stringify(data),
     });
     const result = await res.json();
+    if (!res.ok) throw new Error(result.message || res.statusText);
     showOutput("suppliers-output", result);
     e.target.reset();
     listSuppliers();
@@ -206,6 +207,7 @@ async function deleteSupplier(id, name) {
   try {
     const res = await fetch(`${API_URL}/suppliers/${id}`, { method: "DELETE" });
     const result = await res.json();
+    if (!res.ok) throw new Error(result.message || res.statusText);
     showOutput("suppliers-output", { message: "supplier deleted", result });
     listSuppliers();
   } catch (err) {
@@ -305,6 +307,7 @@ async function deleteProduct(sku, name) {
   try {
     const res = await fetch(`${API_URL}/products/${sku}`, { method: "DELETE" });
     const result = await res.json();
+    if (!res.ok) throw new Error(result.message || res.statusText);
     showOutput("products-output", { message: "product deleted", result });
     listProducts();
   } catch (err) {

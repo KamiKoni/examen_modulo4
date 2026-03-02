@@ -42,8 +42,12 @@ exports.updateSupplier = async (req, res, next) => {
 exports.deleteSupplier = async (req, res, next) => {
   try {
     const data = await service.deleteSupplier(req.params.id);
-    res.json(data);
+    if (!data) return res.status(404).json({ message: "Supplier not found" });
+    res.status(200).json(data);
   } catch (err) {
+    if (err.code === "FK_CONSTRAINT") {
+      return res.status(409).json({ message: err.message });
+    }
     next(err);
   }
 };

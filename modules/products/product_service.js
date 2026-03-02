@@ -2,7 +2,7 @@ const pool = require("../../config/mysql");
 const Joi = require("joi");
 
 const productSchema = Joi.object({
-  product_sku: Joi.string().alphanum().min(1).max(50).required(),
+  product_sku: Joi.string().pattern(/^[A-Za-z0-9\-]+$/).min(1).max(50).required(), // allow letters, digits and hyphens
   id_supplier: Joi.number().integer().required(),
   product_name: Joi.string().max(255).allow(null, ""),
   product_category: Joi.string().max(100).allow(null, ""),
@@ -40,12 +40,36 @@ exports.updateProduct = async (sku, body) => {
   return { message: "product updated" };
 };
 
+const AuditLog = require("../../models/auditLog");
+
 exports.deleteProduct = async (sku) => {
   const [old] = await pool.query("SELECT * FROM products WHERE product_sku = ?", [sku]);
   if (!old[0]) return null;
 
+  // check for associated transactions
+  const [related] = await pool.query(
+    "SELECT COUNT(*) as cnt FROM transactions WHERE product_sku = ?",
+    [sku]
+  );
+  if (related[0].cnt > 0) {
+    const err = new Error("Cannot delete product with associated transactions");
+    err.code = "FK_CONSTRAINT";
+    throw err;
+  }
+
+  // audit
+  try {
+    await AuditLog.create({
+      entity: "product",
+      action: "delete",
+      payload: old[0],
+    });
+  } catch (logErr) {
+    console.warn("Audit log failed:", logErr.message);
+  }
+
   await pool.query("DELETE FROM products WHERE product_sku = ?", [sku]);
-  return { message: "product deleted" };
+  return { message: "product deleted", product: old[0] };
 };
 
 exports.getProducts = async (search) => {
