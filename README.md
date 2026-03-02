@@ -6,7 +6,7 @@ Simple Express/MySQL API for managing inventory: customers, suppliers, products 
 
 1. Clone repository and go into folder:
    ```bash
-   cd /home/coders/Documentos/SaludPLus
+   cd /home/coders/Documentos/Logitech Solutions
    ```
 2. Install dependencies:
    ```bash
@@ -56,8 +56,6 @@ Simple Express/MySQL API for managing inventory: customers, suppliers, products 
      FOREIGN KEY (id_customer) REFERENCES customers(id_customer)
    );
    ```
-
-   These four tables satisfy 3NF: each relation represents a single entity with no redundant data, and foreign keys link them rather than duplicating attributes.
 
 5. Run the server:
    ```bash
@@ -144,6 +142,6 @@ The operations manager can obtain analytical reports via Postman using the follo
 
 ## Frontend
 
-A very small static frontend is served from `/public/index.html` that lets you hit the API end-to-end. It now includes search boxes above the doctors and patients tables; you can type a partial name, email or specialty and click **Search** to filter. Open `http://localhost:3000/` in your browser.
+A very small static frontend is served from `/public/index.html` that lets you hit the API end-to-end. Open `http://localhost:3000/` in your browser.
 
 
