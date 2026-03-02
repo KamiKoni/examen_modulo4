@@ -3,9 +3,25 @@ const API_URL = "http://localhost:3001/api";
 // ============ CUSTOMERS ============
 document.getElementById("customer-form").addEventListener("submit", async (e) => {
   e.preventDefault();
+  setLoading("customers-output", true);
   const formData = new FormData(e.target);
   const data = Object.fromEntries(formData);
-
+  // Simple validation
+  if (!data.customer_name || data.customer_name.length < 2) {
+    showMessage("customers-output", "Name is required (min 2 chars)", true);
+    setLoading("customers-output", false);
+    return;
+  }
+  if (!data.customer_email || !data.customer_email.includes("@")) {
+    showMessage("customers-output", "Valid email required", true);
+    setLoading("customers-output", false);
+    return;
+  }
+  if (!data.customer_direction || data.customer_direction.length < 2) {
+    showMessage("customers-output", "Address/Direction required (min 2 chars)", true);
+    setLoading("customers-output", false);
+    return;
+  }
   try {
     const res = await fetch(`${API_URL}/customers`, {
       method: "POST",
@@ -13,12 +29,13 @@ document.getElementById("customer-form").addEventListener("submit", async (e) =>
       body: JSON.stringify(data),
     });
     const result = await res.json();
-    showOutput("customers-output", result);
+    showMessage("customers-output", result.message || "Customer added!", false);
     e.target.reset();
     listCustomers();
   } catch (err) {
-    showOutput("customers-output", { error: err.message });
+    showMessage("customers-output", err.message, true);
   }
+  setLoading("customers-output", false);
 });
 
 document.getElementById("list-customers").addEventListener("click", () => listCustomers());
@@ -28,13 +45,19 @@ document.getElementById("search-customers").addEventListener("click", () => {
 });
 
 async function listCustomers(search) {
+  setLoading("customers-output", true);
   const params = search ? `?q=${encodeURIComponent(search)}` : "";
   try {
     const res = await fetch(`${API_URL}/customers${params}`);
     const customers = await res.json();
     const tbody = document.getElementById("customers-tbody");
     tbody.innerHTML = "";
-
+    if (!customers.length) {
+      document.getElementById("customers-table").style.display = "none";
+      showMessage("customers-output", "No customers found.", true);
+      setLoading("customers-output", false);
+      return;
+    }
     customers.forEach((customer) => {
       const row = document.createElement("tr");
       row.innerHTML = `
@@ -49,12 +72,12 @@ async function listCustomers(search) {
       `;
       tbody.appendChild(row);
     });
-
     document.getElementById("customers-table").style.display = "table";
-    showOutput("customers-output", { count: customers.length, message: "customers loaded" });
+    showMessage("customers-output", `${customers.length} customers loaded.`, false);
   } catch (err) {
-    showOutput("customers-output", { error: err.message });
+    showMessage("customers-output", err.message, true);
   }
+  setLoading("customers-output", false);
 }
 
 function editCustomerModal(id, name, email, phone, direction) {
@@ -412,6 +435,24 @@ function showOutput(elementId, data) {
   const el = document.getElementById(elementId);
   el.textContent = JSON.stringify(data, null, 2);
   el.classList.add("show");
+}
+
+function showMessage(elementId, message, isError) {
+  const el = document.getElementById(elementId);
+  el.textContent = message;
+  el.style.color = isError ? "#cc0000" : "#0066cc";
+  el.classList.add("show");
+}
+
+function setLoading(elementId, loading) {
+  const el = document.getElementById(elementId);
+  if (loading) {
+    el.textContent = "Loading...";
+    el.style.color = "#666";
+    el.classList.add("show");
+  } else {
+    el.style.color = "";
+  }
 }
 
 function escapeQuotes(str) {

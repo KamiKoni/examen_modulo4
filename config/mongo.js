@@ -4,8 +4,8 @@ require("dotenv").config();
 const connectDB = async () => {
   try {
     const options = {};
-    // allow selecting a specific database via MONGO_DB env var, otherwise default to 'SaludPlus'
-    const dbName = process.env.MONGO_DB || "SaludPlus";
+    // allow selecting a specific database via MONGO_DB env var, otherwise default to 'Logitech'
+    const dbName = process.env.MONGO_DB || "Logitech";
     await mongoose.connect(process.env.MONGO_URI, { dbName, ...options });
     console.log("Connected to MongoDB Atlas (db:", dbName + ")");
   } catch (error) {
