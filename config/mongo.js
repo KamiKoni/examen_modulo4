@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = require("mongoose");
 require("dotenv").config();
-
 const connectDB = async () => {
   try {
     const options = {};
@@ -18,22 +17,22 @@ const connectDB = async () => {
 connectDB()
 module.exports = mongoose;
 
-const AppointmentSchema = new Schema({
-  appointmentId: String,
+const transactionSchema = new Schema({
+  id_transaction: String,
   date: String,
-  doctorName: String,
-  specialty: String,
-  treatmentDescription: String,
-  amountPaid: Number,
+  customer_name: String,
+  customer_email: String,
+  product_name: String,
+  quantity: Number,
 });
 
-const PatientHistorySchema = new Schema({
-  patientEmail: { type: String, unique: true },
-  patientName: String,
-  appointments: [AppointmentSchema],
+const transactionHistorySchema = new Schema({
+  customer_emailEmail: { type: String, unique: true },
+  customer_nameName: String,
+  transaction: [transactionSchema],
 });
 
-module.exports.PatientHistory = mongoose.model(
-  "patient_histories",
-  PatientHistorySchema
+module.exports.transactionHistory = mongoose.model(
+  "transaction_histories",
+  transactionHistorySchema
 );

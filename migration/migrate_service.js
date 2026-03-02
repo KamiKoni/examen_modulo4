@@ -1,15 +1,14 @@
 const pool = require("../config/mysql");
-const { PatientHistory } = require("../config/mongo");
 const xlsx = require("xlsx");
 const fs = require("fs");
 const { parse: parseCSV } = require("csv-parse/sync");
 
-// this service reads an Excel or CSV file, then inserts data into both MySQL and MongoDB
+// this service reads an Excel or CSV file, then inserts inventory data into MySQL
 exports.importExcel = async (filePath, originalName = "") => {
-  let appointments = [];
-  let patients = [];
-  let doctors = [];
-  let insurances = [];
+  let customers = [];
+  let suppliers = [];
+  let products = [];
+  let transactions = [];
 
   // Detect file type from original filename (since multer doesn't preserve extension)
   const isCSV = originalName.toLowerCase().endsWith(".csv") || originalName.includes(".csv");
@@ -22,59 +21,71 @@ exports.importExcel = async (filePath, originalName = "") => {
     const records = parseCSV(csvData, { columns: true });
     console.log("CSV records:", records.length);
 
-    // Extract unique entities from CSV records
-    const patientsMap = new Map();
-    const doctorsMap = new Map();
-    const insurancesMap = new Map();
+    // maps for unique insertion
+    const customersMap = new Map();
+    const suppliersMap = new Map();
+    const productsMap = new Map();
 
     records.forEach(record => {
-      // Patients
-      const patientKey = record.patient_email;
-      if (!patientsMap.has(patientKey)) {
-        patientsMap.set(patientKey, {
-          name: record.patient_name,
-          email: record.patient_email,
-          phone: record.patient_phone,
-          address: record.patient_address
-        });
+      // Customers
+      if (record.customer_email) {
+        const key = record.customer_email;
+        if (!customersMap.has(key)) {
+          customersMap.set(key, {
+            customer_name: record.customer_name,
+            customer_email: record.customer_email,
+            customer_direction: record.customer_direction,
+            customer_phone: record.customer_phone
+          });
+        }
       }
 
-      // Doctors
-      const doctorKey = record.doctor_email;
-      if (!doctorsMap.has(doctorKey)) {
-        doctorsMap.set(doctorKey, {
-          name: record.doctor_name,
-          email: record.doctor_email,
-          specialty: record.specialty
-        });
+      // Suppliers
+      if (record.supplier_name || record.supplier_email) {
+        const key = record.supplier_email || record.supplier_name;
+        if (!suppliersMap.has(key)) {
+          suppliersMap.set(key, {
+            supplier_name: record.supplier_name,
+            supplier_email: record.supplier_email
+          });
+        }
       }
 
-      // Insurances
-      if (record.insurance_provider && !insurancesMap.has(record.insurance_provider)) {
-        insurancesMap.set(record.insurance_provider, {
-          name: record.insurance_provider,
-          coverage_percentage: record.coverage_percentage
-        });
+      // Products
+      if (record.product_sku) {
+        const key = record.product_sku;
+        if (!productsMap.has(key)) {
+          productsMap.set(key, {
+            product_sku: record.product_sku,
+            supplier_ref: record.supplier_email || record.supplier_name,
+            product_name: record.product_name,
+            product_category: record.product_category,
+            unit_price: parseFloat(record.unit_price) || null
+          });
+        }
       }
 
-      // Appointments
-      appointments.push({
-        appointmentId: record.appointment_id,
-        appointment_date: record.appointment_date,
-        patientEmail: record.patient_email,
-        doctorName: record.doctor_name,
-        treatment_code: record.treatment_code,
-        treatment_description: record.treatment_description,
-        treatment_cost: parseFloat(record.treatment_cost) || null,
-        amount_paid: parseFloat(record.amount_paid) || null
-      });
+      // Transactions
+      if (record.product_sku && record.customer_email) {
+        transactions.push({
+          product_sku: record.product_sku,
+          customer_email: record.customer_email,
+          quantity: parseInt(record.quantity, 10) || 0,
+          date: record.date
+        });
+      }
     });
 
-    patients = Array.from(patientsMap.values());
-    doctors = Array.from(doctorsMap.values());
-    insurances = Array.from(insurancesMap.values());
+    customers = Array.from(customersMap.values());
+    suppliers = Array.from(suppliersMap.values());
+    products = Array.from(productsMap.values());
 
-    console.log("Extracted - Patients:", patients.length, "Doctors:", doctors.length, "Insurances:", insurances.length, "Appointments:", appointments.length);
+    console.log(
+      "Extracted - Customers:", customers.length,
+      "Suppliers:", suppliers.length,
+      "Products:", products.length,
+      "Transactions:", transactions.length
+    );
   } else {
     // Parse Excel file
     console.log("Detected Excel format, parsing...");
@@ -85,129 +96,125 @@ exports.importExcel = async (filePath, originalName = "") => {
     // simple helpers
     const toJson = (sheet) => xlsx.utils.sheet_to_json(sheet, { defval: "" });
 
-    // process patients sheet
-    if (sheetNames.includes("patients")) {
-      patients = toJson(workbook.Sheets["patients"]);
+    // process customers sheet
+    if (sheetNames.includes("customers")) {
+      customers = toJson(workbook.Sheets["customers"]);
     }
 
-    // process doctors sheet
-    if (sheetNames.includes("doctors")) {
-      doctors = toJson(workbook.Sheets["doctors"]);
+    // process suppliers sheet
+    if (sheetNames.includes("suppliers")) {
+      suppliers = toJson(workbook.Sheets["suppliers"]);
     }
 
-    // process insurances sheet
-    if (sheetNames.includes("insurances")) {
-      insurances = toJson(workbook.Sheets["insurances"]);
+    // process products sheet
+    if (sheetNames.includes("products")) {
+      products = toJson(workbook.Sheets["products"]);
     }
 
-    // process appointments sheet (optional)
-    if (sheetNames.includes("appointments")) {
-      appointments = toJson(workbook.Sheets["appointments"]);
+    // process transactions sheet (optional)
+    if (sheetNames.includes("transactions")) {
+      transactions = toJson(workbook.Sheets["transactions"]);
     }
   }
 
-  // Now process patients (from either CSV or Excel)
-  console.log("Processing", patients.length, "patients...");
-  for (const p of patients) {
-    const { name, email, phone, address } = p;
-    if (!email) continue; // skip invalid rows
+  // Now process customers, suppliers, products and transactions
+  console.log("Processing", customers.length, "customers...");
+  for (const c of customers) {
+    const { customer_name, customer_email, customer_direction, customer_phone } = c;
+    if (!customer_email) continue;
     try {
       await pool.query(
-        `INSERT INTO patients (name,email,phone,address)
+        `INSERT INTO customers (customer_name,customer_email,customer_direction,customer_phone)
          VALUES (?,?,?,?)
-         ON DUPLICATE KEY UPDATE name=name`,
-        [name, email, phone, address]
+         ON DUPLICATE KEY UPDATE customer_name=VALUES(customer_name), customer_direction=VALUES(customer_direction), customer_phone=VALUES(customer_phone)`,
+        [customer_name, customer_email, customer_direction, customer_phone]
       );
-      console.log("Inserted patient:", email);
+      console.log("Inserted customer:", customer_email);
     } catch (err) {
-      console.error("Error inserting patient", email, ":", err.message);
-      throw err;
-    }
-    try {
-      await PatientHistory.updateOne(
-        { patientEmail: email },
-        { $setOnInsert: { patientName: name, appointments: [] } },
-        { upsert: true }
-      );
-      console.log("Upserted patient history:", email);
-    } catch (err) {
-      console.error("Error upserting patient history", email, ":", err.message);
+      console.error("Error inserting customer", customer_email, ":", err.message);
       throw err;
     }
   }
 
-  // Process doctors
-  console.log("Processing", doctors.length, "doctors...");
-  for (const d of doctors) {
-    const { name, email, specialty } = d;
-    if (!email) continue;
+  console.log("Processing", suppliers.length, "suppliers...");
+  for (const s of suppliers) {
+    const { supplier_name, supplier_email } = s;
+    if (!supplier_name) continue;
     try {
       await pool.query(
-        `INSERT INTO doctors (name,email,specialty)
-         VALUES (?,?,?)
-         ON DUPLICATE KEY UPDATE name=name`,
-        [name, email, specialty]
-      );
-      console.log("Inserted doctor:", email);
-    } catch (err) {
-      console.error("Error inserting doctor", email, ":", err.message);
-      throw err;
-    }
-  }
-
-  // Process insurances
-  console.log("Processing", insurances.length, "insurances...");
-  for (const ins of insurances) {
-    const { name, coverage_percentage } = ins;
-    if (!name) continue;
-    try {
-      await pool.query(
-        `INSERT INTO insurances (name,coverage_percentage)
+        `INSERT INTO suppliers (supplier_name,supplier_email)
          VALUES (?,?)
-         ON DUPLICATE KEY UPDATE coverage_percentage=VALUES(coverage_percentage)`,
-        [name, coverage_percentage || null]
+         ON DUPLICATE KEY UPDATE supplier_name=VALUES(supplier_name), supplier_email=VALUES(supplier_email)`,
+        [supplier_name, supplier_email || null]
       );
-      console.log("Inserted insurance:", name);
+      console.log("Inserted supplier:", supplier_name);
     } catch (err) {
-      console.error("Error inserting insurance", name, ":", err.message);
+      console.error("Error inserting supplier", supplier_name, ":", err.message);
       throw err;
     }
   }
 
-  // Process appointments
-  console.log("Processing", appointments.length, "appointments...");
-  for (const a of appointments) {
-    const { appointmentId, patientEmail, doctorName, appointment_date, amount_paid, treatment_code, treatment_description, treatment_cost } = a;
-    if (!patientEmail) continue;
+  // helper lookup functions
+  const findSupplierId = async (ref) => {
+    if (!ref) return null;
+    const [rows] = await pool.query(
+      `SELECT id_supplier FROM suppliers WHERE supplier_email=? OR supplier_name=? LIMIT 1`,
+      [ref, ref]
+    );
+    return rows[0]?.id_supplier || null;
+  };
+
+  const findCustomerId = async (email) => {
+    if (!email) return null;
+    const [rows] = await pool.query(
+      `SELECT id_customer FROM customers WHERE customer_email=? LIMIT 1`,
+      [email]
+    );
+    return rows[0]?.id_customer || null;
+  };
+
+  console.log("Processing", products.length, "products...");
+  for (const p of products) {
+    const { product_sku, supplier_ref, product_name, product_category, unit_price } = p;
+    if (!product_sku) continue;
     try {
-      // avoid duplicate MySQL records: assume a unique index on (patient_email,doctor_name,appointment_date,amount_paid)
+      const supplierId = await findSupplierId(supplier_ref);
+      await pool.query(
+        `INSERT INTO products (product_sku,id_supplier,product_name,product_category,unit_price)
+         VALUES (?,?,?,?,?)
+         ON DUPLICATE KEY UPDATE id_supplier=VALUES(id_supplier), product_name=VALUES(product_name), product_category=VALUES(product_category), unit_price=VALUES(unit_price)`,
+        [product_sku, supplierId, product_name || null, product_category || null, unit_price]
+      );
+      console.log("Inserted product:", product_sku);
+    } catch (err) {
+      console.error("Error inserting product", product_sku, ":", err.message);
+      throw err;
+    }
+  }
+
+  console.log("Processing", transactions.length, "transactions...");
+  for (const t of transactions) {
+    const { product_sku, customer_email, quantity, date } = t;
+    if (!product_sku || !customer_email) continue;
+    try {
+      const customerId = await findCustomerId(customer_email);
+      if (!customerId) continue;
+      // avoid duplicates by checking qty/date/product/customer
       const [existing] = await pool.query(
-        `SELECT id FROM appointments 
-         WHERE patient_email=? AND doctor_name=? AND appointment_date=? AND amount_paid=? LIMIT 1`,
-        [patientEmail, doctorName, appointment_date, amount_paid]
+        `SELECT id_transaction FROM transactions
+         WHERE product_sku=? AND id_customer=? AND date=? AND quantity=? LIMIT 1`,
+        [product_sku, customerId, date, quantity]
       );
       if (existing.length === 0) {
         await pool.query(
-          `INSERT INTO appointments (appointment_id,appointment_date,patient_email,doctor_name,insurance_id,treatment_code,treatment_description,treatment_cost,amount_paid)
-           VALUES (?,?,?,?,?,?,?,?,?)`,
-          [appointmentId || null, appointment_date, patientEmail, doctorName, null, treatment_code || null, treatment_description || null, treatment_cost || null, amount_paid]
+          `INSERT INTO transactions (product_sku,id_customer,quantity,date)
+           VALUES (?,?,?,?)`,
+          [product_sku, customerId, quantity, date]
         );
-        console.log("Inserted appointment:", appointmentId);
+        console.log("Inserted transaction for customer:", customer_email);
       }
     } catch (err) {
-      console.error("Error inserting appointment", appointmentId, ":", err.message);
-      throw err;
-    }
-    try {
-      // update mongodb history without duplicating entries
-      await PatientHistory.updateOne(
-        { patientEmail },
-        { $addToSet: { appointments: { appointmentId: appointmentId || null, doctorName, appointmentDate: appointment_date, treatmentDescription: treatment_description || null, amountPaid: amount_paid } } },
-        { upsert: true }
-      );
-      console.log("Updated patient history for appointment:", appointmentId);
-    } catch (err) {
-      console.error("Error updating patient history", appointmentId, ":", err.message);
+      console.error("Error inserting transaction for", customer_email, ":", err.message);
       throw err;
     }
   }

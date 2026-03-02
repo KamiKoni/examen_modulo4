@@ -1,6 +1,6 @@
 # SaludPlus Backend
 
-Simple Express/MongoDB/MySQL API for managing doctors, patients and reports.
+Simple Express/MySQL API for managing inventory: customers, suppliers, products and transactions.
 
 ## Setup
 
@@ -17,47 +17,43 @@ Simple Express/MongoDB/MySQL API for managing doctors, patients and reports.
    MONGO_URI=mongodb+srv://<user>:<pass>@cluster/yourdb
    PORT=3000
    ```
-5. Ensure MySQL database is running and contains the following normalized tables (3NF):
+5. Ensure MySQL database is running and contains the following normalized tables (3NF) for inventory management:
    ```sql
-   -- patients table
-   CREATE TABLE patients (
-     id INT AUTO_INCREMENT PRIMARY KEY,
-     name VARCHAR(100) NOT NULL,
-     email VARCHAR(100) NOT NULL UNIQUE,
-     phone VARCHAR(20),
-     address VARCHAR(200)
+   -- customers table
+   CREATE TABLE customers (
+     id_customer INT AUTO_INCREMENT PRIMARY KEY,
+     customer_name VARCHAR(255) NOT NULL,
+     customer_email VARCHAR(255) UNIQUE,
+     customer_direction VARCHAR(255),
+     customer_phone VARCHAR(50)
    );
 
-   -- doctors table
-   CREATE TABLE doctors (
-     id INT AUTO_INCREMENT PRIMARY KEY,
-     name VARCHAR(100) NOT NULL,
-     email VARCHAR(100) NOT NULL UNIQUE,
-     specialty VARCHAR(100)
+   -- suppliers table
+   CREATE TABLE suppliers (
+     id_supplier INT AUTO_INCREMENT PRIMARY KEY,
+     supplier_name VARCHAR(255) NOT NULL,
+     supplier_email VARCHAR(255) UNIQUE
    );
 
-   -- insurances table
-   CREATE TABLE insurances (
-     id INT AUTO_INCREMENT PRIMARY KEY,
-     name VARCHAR(100) NOT NULL UNIQUE,
-     coverage_percentage DECIMAL(5,2)
+   -- products table
+   CREATE TABLE products (
+     product_sku VARCHAR(50) PRIMARY KEY,
+     id_supplier INT NOT NULL,
+     product_name VARCHAR(255),
+     product_category VARCHAR(100),
+     unit_price DECIMAL(10,2),
+     FOREIGN KEY (id_supplier) REFERENCES suppliers(id_supplier)
    );
 
-   -- appointments table (FKs reference other normalized entities)
-   CREATE TABLE appointments (
-     id INT AUTO_INCREMENT PRIMARY KEY,
-     appointment_id VARCHAR(50) NOT NULL,
-     appointment_date DATE NOT NULL,
-     patient_id INT NOT NULL,
-     doctor_id INT NOT NULL,
-     insurance_id INT NULL,
-     treatment_code VARCHAR(50),
-     treatment_description TEXT,
-     treatment_cost DECIMAL(10,2),
-     amount_paid DECIMAL(10,2),
-     FOREIGN KEY (patient_id) REFERENCES patients(id),
-     FOREIGN KEY (doctor_id) REFERENCES doctors(id),
-     FOREIGN KEY (insurance_id) REFERENCES insurances(id)
+   -- transactions table (records stock movements)
+   CREATE TABLE transactions (
+     id_transaction INT AUTO_INCREMENT PRIMARY KEY,
+     product_sku VARCHAR(50) NOT NULL,
+     id_customer INT NOT NULL,
+     quantity INT NOT NULL,
+     date DATE,
+     FOREIGN KEY (product_sku) REFERENCES products(product_sku),
+     FOREIGN KEY (id_customer) REFERENCES customers(id_customer)
    );
    ```
 
@@ -68,45 +64,86 @@ Simple Express/MongoDB/MySQL API for managing doctors, patients and reports.
    npm run dev   # uses nodemon
    ```
 
-The API listens on `http://localhost:3000`.
+The API listens on `http://localhost:3001` (or the port set in `.env`).
 
 ## Endpoints
 
-### Doctors
-- `GET /api/doctors` – list doctors. Supports optional query parameters:
-  - `?specialty=` for exact specialty filter
-  - `?q=` to search name, email or specialty (substring match)
-  You can supply a single field value and it will return matching records.
-- `GET /api/doctors/:id` – get one doctor
-- `POST /api/doctors` – create doctor (body: `name,email,specialty`)
-- `PUT /api/doctors/:id` – update doctor
-- `DELETE /api/doctors/:id` – remove doctor
+### Customers
+- `GET /api/customers` – list customers; optionally `?q=` to search name, email or direction.
+- `GET /api/customers/:id` – retrieve one customer
+- `POST /api/customers` – create (body: `customer_name,customer_email,customer_direction,customer_phone`)
+- `PUT /api/customers/:id` – update
+- `DELETE /api/customers/:id` – delete
 
-### Patients
-- `GET /api/patients` – list patients; optionally use `?q=` to search by name or email.
-- `POST /api/patients` – create patient (`name,email,phone,address`)
-- `PUT /api/patients/:email` – update (name, phone, address)
-- `DELETE /api/patients/:email` – delete
-- `GET /api/patients/:email/history` – get history from Mongo
+### Suppliers
+- `GET /api/suppliers` – list suppliers; supports `?q=` search by name or email.
+- `GET /api/suppliers/:id` – get supplier
+- `POST /api/suppliers` – create (`supplier_name,supplier_email`)
+- `PUT /api/suppliers/:id` – update
+- `DELETE /api/suppliers/:id` – delete
 
-### Reports
-- `GET /api/reports/revenue` – revenue report, accepts optional `startDate` and `endDate` query params
+### Products
+- `GET /api/products` – list products; optional `?q=` to search by name or SKU.
+- `GET /api/products/:sku` – get product details
+- `POST /api/products` – create (`product_sku,id_supplier,product_name,product_category,unit_price`)
+- `PUT /api/products/:sku` – update
+- `DELETE /api/products/:sku` – remove
+
+### Transactions
+- `GET /api/transactions` – list stock movements; `?q=` can search customer or product names.
+- `GET /api/transactions/:id` – fetch a single transaction
+- `POST /api/transactions` – create (`product_sku,id_customer,quantity,date`)
+- `PUT /api/transactions/:id` – update
+- `DELETE /api/transactions/:id` – delete
 
 ### Migration
-- `POST /api/migration/upload` – upload an Excel file with sheets named `patients`, `doctors`, `appointments`.  File field name should be `file`.
-  The service will insert rows into MySQL and update Mongo patient histories. **It is idempotent**: repeated uploads do not create duplicates because
-  the code uses `ON DUPLICATE KEY` for patients/doctors, checks existing
-  appointments before insert, and pushes to Mongo with `$addToSet`.
+- `POST /api/migration/upload` – upload an Excel/CSV file with sheets named `customers`, `suppliers`, `products` and optionally `transactions`. Field names should match column names.
+  The service inserts rows into MySQL and avoids duplicates via `ON DUPLICATE KEY` checks.
+
+## Business Intelligence / Advanced Queries
+
+The operations manager can obtain analytical reports via Postman using the following requests:
+
+- **Supplier analysis**
+   Determine which suppliers have sold us the most products (number of items) and the total value of inventory associated with each.
+    ```sql
+    SELECT s.supplier_name,
+           SUM(t.quantity) AS total_items,
+           SUM(t.quantity * p.unit_price) AS inventory_value
+    FROM suppliers s
+    JOIN products p ON p.id_supplier = s.id_supplier
+    JOIN transactions t ON t.product_sku = p.product_sku
+    GROUP BY s.id_supplier;
+    ```
+
+- **Customer behavior**
+  -  View the purchase history for a specific customer, detailing products, dates, and total spent per transaction.
+    ```sql
+    SELECT t.date,
+           p.product_name,
+           t.quantity,
+           t.quantity * p.unit_price AS total_spent
+    FROM transactions t
+    JOIN products p ON p.product_sku = t.product_sku
+    WHERE t.id_customer = ?
+    ORDER BY t.date;
+    ```
+
+- **Top products**
+  - List the best-selling products within a specific category, ordered by revenue generated.
+    ```sql
+    SELECT p.product_name,
+           SUM(t.quantity) AS total_items,
+           SUM(t.quantity * p.unit_price) AS total_revenue
+    FROM products p
+    JOIN transactions t ON t.product_sku = p.product_sku
+    WHERE p.product_category = ?
+    GROUP BY p.product_sku
+    ORDER BY total_revenue DESC;
+    ```
 
 ## Frontend
 
 A very small static frontend is served from `/public/index.html` that lets you hit the API end-to-end. It now includes search boxes above the doctors and patients tables; you can type a partial name, email or specialty and click **Search** to filter. Open `http://localhost:3000/` in your browser.
 
-## Development Notes
 
-- Code follows simple controller/service pattern.
-- Centralized error handler in `config/errorHandler.js`.
-- Add new modules under `modules/`.
-- README in root may contain more project‑wide info.
-
-Feel free to extend with authentication, validation, or UI enhancements.

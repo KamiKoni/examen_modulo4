@@ -1,228 +1,394 @@
 const API_URL = "http://localhost:3001/api";
 
-// ============ DOCTORS ============
-document.getElementById("doctor-form").addEventListener("submit", async (e) => {
+// ============ CUSTOMERS ============
+document.getElementById("customer-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const formData = new FormData(e.target);
   const data = Object.fromEntries(formData);
 
   try {
-    const res = await fetch(`${API_URL}/doctors`, {
+    const res = await fetch(`${API_URL}/customers`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
     const result = await res.json();
-    showOutput("doctors-output", result);
+    showOutput("customers-output", result);
     e.target.reset();
-    listDoctors();
+    listCustomers();
   } catch (err) {
-    showOutput("doctors-output", { error: err.message });
+    showOutput("customers-output", { error: err.message });
   }
 });
 
-document.getElementById("list-doctors").addEventListener("click", () => listDoctors());
-document.getElementById("search-doctors").addEventListener("click", () => {
-  const term = document.getElementById("doctor-search").value.trim();
-  listDoctors(term);
+document.getElementById("list-customers").addEventListener("click", () => listCustomers());
+document.getElementById("search-customers").addEventListener("click", () => {
+  const term = document.getElementById("customer-search").value.trim();
+  listCustomers(term);
 });
 
-async function listDoctors(search) {
+async function listCustomers(search) {
   const params = search ? `?q=${encodeURIComponent(search)}` : "";
   try {
-    const res = await fetch(`${API_URL}/doctors${params}`);
-    const doctors = await res.json();
-    const tbody = document.getElementById("doctors-tbody");
+    const res = await fetch(`${API_URL}/customers${params}`);
+    const customers = await res.json();
+    const tbody = document.getElementById("customers-tbody");
     tbody.innerHTML = "";
 
-    doctors.forEach((doc) => {
+    customers.forEach((customer) => {
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${doc.name}</td>
-        <td>${doc.email}</td>
-        <td>${doc.specialty}</td>
+        <td>${customer.customer_name || ""}</td>
+        <td>${customer.customer_email || ""}</td>
+        <td>${customer.customer_phone || ""}</td>
+        <td>${customer.customer_direction || ""}</td>
         <td class="actions">
-          <button onclick="editDoctorModal('${doc.id}', '${escapeQuotes(doc.name)}', '${doc.email}', '${doc.specialty}')">Edit</button>
-          <button class="danger" onclick="deleteDoctor('${doc.id}', '${escapeQuotes(doc.name)}')">Delete</button>
+          <button onclick="editCustomerModal('${customer.id}', '${escapeQuotes(customer.customer_name)}', '${customer.customer_email}', '${customer.customer_phone}', '${escapeQuotes(customer.customer_direction)}')">Edit</button>
+          <button class="danger" onclick="deleteCustomer('${customer.id}', '${escapeQuotes(customer.customer_name)}')">Delete</button>
         </td>
       `;
       tbody.appendChild(row);
     });
 
-    document.getElementById("doctors-table").style.display = "table";
-    showOutput("doctors-output", { count: doctors.length, message: "Doctors loaded" });
+    document.getElementById("customers-table").style.display = "table";
+    showOutput("customers-output", { count: customers.length, message: "customers loaded" });
   } catch (err) {
-    showOutput("doctors-output", { error: err.message });
+    showOutput("customers-output", { error: err.message });
   }
 }
 
-function editDoctorModal(id, name, email, specialty) {
-  const newName = prompt("Doctor name:", name);
+function editCustomerModal(id, name, email, phone, direction) {
+  const newName = prompt("Customer name:", name);
   if (!newName) return;
   const newEmail = prompt("Email:", email);
   if (!newEmail) return;
-  const newSpecialty = prompt("Specialty:", specialty);
-  if (!newSpecialty) return;
+  const newPhone = prompt("Phone:", phone);
+  if (!newPhone) return;
+  const newDirection = prompt("Address/Direction:", direction);
+  if (!newDirection) return;
 
-  updateDoctor(id, newName, newEmail, newSpecialty);
+  updateCustomer(id, newName, newEmail, newPhone, newDirection);
 }
 
-async function updateDoctor(id, name, email, specialty) {
+async function updateCustomer(id, customer_name, customer_email, customer_phone, customer_direction) {
   try {
-    const res = await fetch(`${API_URL}/doctors/${id}`, {
+    const res = await fetch(`${API_URL}/customers/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, specialty }),
+      body: JSON.stringify({ customer_name, customer_email, customer_phone, customer_direction }),
     });
     const result = await res.json();
-    showOutput("doctors-output", { message: "Doctor updated", result });
-    listDoctors();
+    showOutput("customers-output", { message: "customer updated", result });
+    listCustomers();
   } catch (err) {
-    showOutput("doctors-output", { error: err.message });
+    showOutput("customers-output", { error: err.message });
   }
 }
 
-async function deleteDoctor(id, name) {
-  if (!confirm(`Delete doctor "${name}"?`)) return;
+async function deleteCustomer(id, name) {
+  if (!confirm(`Delete customer "${name}"?`)) return;
 
   try {
-    const res = await fetch(`${API_URL}/doctors/${id}`, { method: "DELETE" });
+    const res = await fetch(`${API_URL}/customers/${id}`, { method: "DELETE" });
     const result = await res.json();
-    showOutput("doctors-output", { message: "Doctor deleted", result });
-    listDoctors();
+    showOutput("customers-output", { message: "customer deleted", result });
+    listCustomers();
   } catch (err) {
-    showOutput("doctors-output", { error: err.message });
+    showOutput("customers-output", { error: err.message });
   }
 }
 
-// ============ PATIENTS ============
-
-document.getElementById("patient-form").addEventListener("submit", async (e) => {
+// ============ SUPPLIERS ============
+document.getElementById("supplier-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const formData = new FormData(e.target);
   const data = Object.fromEntries(formData);
 
   try {
-    const res = await fetch(`${API_URL}/patients`, {
+    const res = await fetch(`${API_URL}/suppliers`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
     const result = await res.json();
-    showOutput("patients-output", result);
+    showOutput("suppliers-output", result);
     e.target.reset();
-    listPatients();
+    listSuppliers();
   } catch (err) {
-    showOutput("patients-output", { error: err.message });
+    showOutput("suppliers-output", { error: err.message });
   }
 });
 
-document.getElementById("list-patients").addEventListener("click", () => listPatients());
-document.getElementById("search-patients").addEventListener("click", () => {
-  const term = document.getElementById("patient-search").value.trim();
-  listPatients(term);
+document.getElementById("list-suppliers").addEventListener("click", () => listSuppliers());
+document.getElementById("search-suppliers").addEventListener("click", () => {
+  const term = document.getElementById("supplier-search").value.trim();
+  listSuppliers(term);
 });
 
-async function listPatients(search) {
+async function listSuppliers(search) {
   const params = search ? `?q=${encodeURIComponent(search)}` : "";
   try {
-    const res = await fetch(`${API_URL}/patients${params}`);
-    const patients = await res.json();
-    const tbody = document.getElementById("patients-tbody");
+    const res = await fetch(`${API_URL}/suppliers${params}`);
+    const suppliers = await res.json();
+    const tbody = document.getElementById("suppliers-tbody");
     tbody.innerHTML = "";
 
-    patients.forEach((pat) => {
+    suppliers.forEach((supplier) => {
       const row = document.createElement("tr");
       row.innerHTML = `
-        <td>${pat.name}</td>
-        <td>${pat.email}</td>
-        <td>${pat.phone}</td>
-        <td>${pat.address}</td>
+        <td>${supplier.supplier_name || ""}</td>
+        <td>${supplier.supplier_email || ""}</td>
         <td class="actions">
-          <button onclick="editPatientModal('${escapeQuotes(pat.name)}', '${pat.email}', '${pat.phone}', '${escapeQuotes(pat.address)}')">Edit</button>
-          <button class="secondary" onclick="getPatientHistory('${pat.email}')">History</button>
-          <button class="danger" onclick="deletePatient('${pat.email}', '${escapeQuotes(pat.name)}')">Delete</button>
+          <button onclick="editSupplierModal('${supplier.id_supplier}', '${escapeQuotes(supplier.supplier_name)}', '${supplier.supplier_email}')">Edit</button>
+          <button class="danger" onclick="deleteSupplier('${supplier.id_supplier}', '${escapeQuotes(supplier.supplier_name)}')">Delete</button>
         </td>
       `;
       tbody.appendChild(row);
     });
 
-    document.getElementById("patients-table").style.display = "table";
-    showOutput("patients-output", { count: patients.length, message: "Patients loaded" });
+    document.getElementById("suppliers-table").style.display = "table";
+    showOutput("suppliers-output", { count: suppliers.length, message: "suppliers loaded" });
   } catch (err) {
-    showOutput("patients-output", { error: err.message });
+    showOutput("suppliers-output", { error: err.message });
   }
 }
 
-function editPatientModal(name, email, phone, address) {
-  const newName = prompt("Patient name:", name);
+function editSupplierModal(id, name, email) {
+  const newName = prompt("Supplier name:", name);
   if (!newName) return;
-  const newPhone = prompt("Phone:", phone);
-  if (!newPhone) return;
-  const newAddress = prompt("Address:", address);
-  if (!newAddress) return;
+  const newEmail = prompt("Email:", email);
+  if (!newEmail) return;
 
-  updatePatient(email, newName, newPhone, newAddress);
+  updateSupplier(id, newName, newEmail);
 }
 
-async function updatePatient(email, name, phone, address) {
+async function updateSupplier(id, supplier_name, supplier_email) {
   try {
-    const res = await fetch(`${API_URL}/patients/${email}`, {
+    const res = await fetch(`${API_URL}/suppliers/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, phone, address }),
+      body: JSON.stringify({ supplier_name, supplier_email }),
     });
     const result = await res.json();
-    showOutput("patients-output", { message: "Patient updated", result });
-    listPatients();
+    showOutput("suppliers-output", { message: "supplier updated", result });
+    listSuppliers();
   } catch (err) {
-    showOutput("patients-output", { error: err.message });
+    showOutput("suppliers-output", { error: err.message });
   }
 }
 
-async function deletePatient(email, name) {
-  if (!confirm(`Delete patient "${name}"?`)) return;
+async function deleteSupplier(id, name) {
+  if (!confirm(`Delete supplier "${name}"?`)) return;
 
   try {
-    const res = await fetch(`${API_URL}/patients/${email}`, { method: "DELETE" });
+    const res = await fetch(`${API_URL}/suppliers/${id}`, { method: "DELETE" });
     const result = await res.json();
-    showOutput("patients-output", { message: "Patient deleted", result });
-    listPatients();
+    showOutput("suppliers-output", { message: "supplier deleted", result });
+    listSuppliers();
   } catch (err) {
-    showOutput("patients-output", { error: err.message });
+    showOutput("suppliers-output", { error: err.message });
   }
 }
 
-async function getPatientHistory(email) {
-  try {
-    const res = await fetch(`${API_URL}/patients/${email}/history`);
-    const history = await res.json();
-    showOutput("patients-output", { type: "patient_history", history });
-  } catch (err) {
-    showOutput("patients-output", { error: err.message });
-  }
-}
-
-// ============ REPORTS ============
-
-document.getElementById("revenue-report").addEventListener("click", async () => {
-  const start = document.getElementById("start-date").value;
-  const end = document.getElementById("end-date").value;
-  const params = new URLSearchParams();
-  if (start) params.append("startDate", start);
-  if (end) params.append("endDate", end);
+// ============ PRODUCTS ============
+document.getElementById("product-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const data = Object.fromEntries(formData);
 
   try {
-    const res = await fetch(`${API_URL}/reports/revenue?${params}`);
-    const report = await res.json();
-    showOutput("reports-output", report);
+    const res = await fetch(`${API_URL}/products`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    const result = await res.json();
+    showOutput("products-output", result);
+    e.target.reset();
+    listProducts();
   } catch (err) {
-    showOutput("reports-output", { error: err.message });
+    showOutput("products-output", { error: err.message });
   }
 });
 
-// ============ MIGRATION ============
+document.getElementById("list-products").addEventListener("click", () => listProducts());
+document.getElementById("search-products").addEventListener("click", () => {
+  const term = document.getElementById("product-search").value.trim();
+  listProducts(term);
+});
 
+async function listProducts(search) {
+  const params = search ? `?q=${encodeURIComponent(search)}` : "";
+  try {
+    const res = await fetch(`${API_URL}/products${params}`);
+    const products = await res.json();
+    const tbody = document.getElementById("products-tbody");
+    tbody.innerHTML = "";
+
+    products.forEach((product) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${product.product_sku || ""}</td>
+        <td>${product.id_supplier || ""}</td>
+        <td>${product.product_name || ""}</td>
+        <td>${product.product_category || ""}</td>
+        <td>$${parseFloat(product.unit_price || 0).toFixed(2)}</td>
+        <td class="actions">
+          <button onclick="editProductModal('${product.product_sku}', '${product.id_supplier}', '${escapeQuotes(product.product_name)}', '${escapeQuotes(product.product_category)}', '${product.unit_price}')">Edit</button>
+          <button class="danger" onclick="deleteProduct('${product.product_sku}', '${escapeQuotes(product.product_name)}')">Delete</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+
+    document.getElementById("products-table").style.display = "table";
+    showOutput("products-output", { count: products.length, message: "products loaded" });
+  } catch (err) {
+    showOutput("products-output", { error: err.message });
+  }
+}
+
+function editProductModal(sku, supplierId, name, category, price) {
+  const newSupplierId = prompt("Supplier ID:", supplierId);
+  if (!newSupplierId) return;
+  const newName = prompt("Product name:", name);
+  if (!newName) return;
+  const newCategory = prompt("Category:", category);
+  if (!newCategory) return;
+  const newPrice = prompt("Unit Price:", price);
+  if (!newPrice) return;
+
+  updateProduct(sku, newSupplierId, newName, newCategory, newPrice);
+}
+
+async function updateProduct(product_sku, id_supplier, product_name, product_category, unit_price) {
+  try {
+    const res = await fetch(`${API_URL}/products/${product_sku}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id_supplier, product_name, product_category, unit_price }),
+    });
+    const result = await res.json();
+    showOutput("products-output", { message: "product updated", result });
+    listProducts();
+  } catch (err) {
+    showOutput("products-output", { error: err.message });
+  }
+}
+
+async function deleteProduct(sku, name) {
+  if (!confirm(`Delete product "${name}"?`)) return;
+
+  try {
+    const res = await fetch(`${API_URL}/products/${sku}`, { method: "DELETE" });
+    const result = await res.json();
+    showOutput("products-output", { message: "product deleted", result });
+    listProducts();
+  } catch (err) {
+    showOutput("products-output", { error: err.message });
+  }
+}
+
+// ============ TRANSACTIONS ============
+document.getElementById("transaction-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const data = Object.fromEntries(formData);
+
+  try {
+    const res = await fetch(`${API_URL}/transactions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    const result = await res.json();
+    showOutput("transactions-output", result);
+    e.target.reset();
+    listTransactions();
+  } catch (err) {
+    showOutput("transactions-output", { error: err.message });
+  }
+});
+
+document.getElementById("list-transactions").addEventListener("click", () => listTransactions());
+document.getElementById("search-transactions").addEventListener("click", () => {
+  const term = document.getElementById("transaction-search").value.trim();
+  listTransactions(term);
+});
+
+async function listTransactions(search) {
+  const params = search ? `?q=${encodeURIComponent(search)}` : "";
+  try {
+    const res = await fetch(`${API_URL}/transactions${params}`);
+    const transactions = await res.json();
+    const tbody = document.getElementById("transactions-tbody");
+    tbody.innerHTML = "";
+
+    transactions.forEach((transaction) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${transaction.id_transaction || ""}</td>
+        <td>${transaction.product_sku || ""}</td>
+        <td>${transaction.customer_name || ""}</td>
+        <td>${transaction.quantity || ""}</td>
+        <td>${transaction.date ? new Date(transaction.date).toLocaleDateString() : ""}</td>
+        <td class="actions">
+          <button onclick="editTransactionModal('${transaction.id_transaction}', '${transaction.product_sku}', '${transaction.id_customer}', '${transaction.quantity}', '${transaction.date}')">Edit</button>
+          <button class="danger" onclick="deleteTransaction('${transaction.id_transaction}')">Delete</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+
+    document.getElementById("transactions-table").style.display = "table";
+    showOutput("transactions-output", { count: transactions.length, message: "transactions loaded" });
+  } catch (err) {
+    showOutput("transactions-output", { error: err.message });
+  }
+}
+
+function editTransactionModal(id, sku, customerId, quantity, date) {
+  const newSku = prompt("Product SKU:", sku);
+  if (!newSku) return;
+  const newCustomerId = prompt("Customer ID:", customerId);
+  if (!newCustomerId) return;
+  const newQuantity = prompt("Quantity:", quantity);
+  if (!newQuantity) return;
+  const newDate = prompt("Date (YYYY-MM-DD):", date);
+  if (!newDate) return;
+
+  updateTransaction(id, newSku, newCustomerId, newQuantity, newDate);
+}
+
+async function updateTransaction(id_transaction, product_sku, id_customer, quantity, date) {
+  try {
+    const res = await fetch(`${API_URL}/transactions/${id_transaction}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ product_sku, id_customer, quantity, date }),
+    });
+    const result = await res.json();
+    showOutput("transactions-output", { message: "transaction updated", result });
+    listTransactions();
+  } catch (err) {
+    showOutput("transactions-output", { error: err.message });
+  }
+}
+
+async function deleteTransaction(id) {
+  if (!confirm(`Delete transaction "${id}"?`)) return;
+
+  try {
+    const res = await fetch(`${API_URL}/transactions/${id}`, { method: "DELETE" });
+    const result = await res.json();
+    showOutput("transactions-output", { message: "transaction deleted", result });
+    listTransactions();
+  } catch (err) {
+    showOutput("transactions-output", { error: err.message });
+  }
+}
+
+// ============ MIGRATION ============
 document.getElementById("migration-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const formData = new FormData(e.target);
@@ -249,5 +415,5 @@ function showOutput(elementId, data) {
 }
 
 function escapeQuotes(str) {
-  return String(str).replace(/'/g, "\\'").replace(/"/g, '\\"');
+  return String(str || "").replace(/'/g, "\\'").replace(/"/g, '\\"');
 }

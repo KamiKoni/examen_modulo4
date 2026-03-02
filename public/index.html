@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>SaludPlus Demo UI</title>
+  <title>Logitech Demo UI</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
@@ -30,81 +30,120 @@
   </style>
 </head>
 <body>
-  <h1>🏥 SaludPlus Healthcare Management</h1>
+  <h1>Inventory Management</h1>
 
-  <!-- Doctors Section -->
-  <section id="doctors">
-    <h2>👨‍⚕️ Doctors</h2>
-    <form id="doctor-form">
+  <!-- Customers Section -->
+  <section id="customers">
+    <h2> Customers</h2>
+    <form id="customer-form">
       <div class="form-row">
-        <input name="name" placeholder="Doctor Name" required />
-        <input name="email" placeholder="Email" required />
+        <input name="customer_name" placeholder="Customer Name" required />
+        <input name="customer_email" placeholder="Email" />
       </div>
-      <input name="specialty" placeholder="Specialty" required />
-      <button type="submit">Add Doctor</button>
+      <div class="form-row">
+        <input name="customer_phone" placeholder="Phone" />
+        <input name="customer_direction" placeholder="Address/Direction" />
+      </div>
+      <button type="submit">Add Customer</button>
     </form>
     <div>
-      <input id="doctor-search" placeholder="Search doctors (name/email/specialty)" />
-      <button id="search-doctors" class="secondary">Search</button>
-      <button id="list-doctors" class="secondary">Refresh List</button>
+      <input id="customer-search" placeholder="Search customers (name/email/direction)" />
+      <button id="search-customers" class="secondary">Search</button>
+      <button id="list-customers" class="secondary">Refresh List</button>
     </div>
-    <table id="doctors-table" style="display:none;">
+    <table id="customers-table" style="display:none;">
       <thead>
-        <tr><th>Name</th><th>Email</th><th>Specialty</th><th>Actions</th></tr>
+        <tr><th>Name</th><th>Email</th><th>Phone</th><th>Direction</th><th>Actions</th></tr>
       </thead>
-      <tbody id="doctors-tbody"></tbody>
+      <tbody id="customers-tbody"></tbody>
     </table>
-    <pre id="doctors-output"></pre>
+    <pre id="customers-output"></pre>
   </section>
 
-  <!-- Patients Section -->
-  <section id="patients">
-    <h2>👨‍⚕️ Patients</h2>
-    <form id="patient-form">
+  <!-- Suppliers Section -->
+  <section id="suppliers">
+    <h2> Suppliers</h2>
+    <form id="supplier-form">
       <div class="form-row">
-        <input name="name" placeholder="Patient Name" required />
-        <input name="email" placeholder="Email" required />
+        <input name="supplier_name" placeholder="Supplier Name" required />
+        <input name="supplier_email" placeholder="Email" />
       </div>
-      <div class="form-row">
-        <input name="phone" placeholder="Phone" required />
-        <input name="address" placeholder="Address" required />
-      </div>
-      <button type="submit">Add Patient</button>
+      <button type="submit">Add Supplier</button>
     </form>
     <div>
-      <input id="patient-search" placeholder="Search patients (name/email)" />
-      <button id="search-patients" class="secondary">Search</button>
-      <button id="list-patients" class="secondary">Refresh List</button>
+      <input id="supplier-search" placeholder="Search suppliers (name/email)" />
+      <button id="search-suppliers" class="secondary">Search</button>
+      <button id="list-suppliers" class="secondary">Refresh List</button>
     </div>
-    <table id="patients-table" style="display:none;">
+    <table id="suppliers-table" style="display:none;">
       <thead>
-        <tr><th>Name</th><th>Email</th><th>Phone</th><th>Address</th><th>Actions</th></tr>
+        <tr><th>Name</th><th>Email</th><th>Actions</th></tr>
       </thead>
-      <tbody id="patients-tbody"></tbody>
+      <tbody id="suppliers-tbody"></tbody>
     </table>
-    <pre id="patients-output"></pre>
+    <pre id="suppliers-output"></pre>
   </section>
 
-  <!-- Reports Section -->
-  <section id="reports">
-    <h2>📊 Reports</h2>
-    <div class="form-row">
-      <div>
-        <label>Start Date:</label>
-        <input id="start-date" type="date" />
+  <!-- Products Section -->
+  <section id="products">
+    <h2> Products</h2>
+    <form id="product-form">
+      <div class="form-row">
+        <input name="product_sku" placeholder="SKU" required />
+        <input name="id_supplier" placeholder="Supplier ID" required />
       </div>
-      <div>
-        <label>End Date:</label>
-        <input id="end-date" type="date" />
+      <div class="form-row">
+        <input name="product_name" placeholder="Name" />
+        <input name="product_category" placeholder="Category" />
       </div>
+      <input name="unit_price" placeholder="Unit Price" type="number" step="0.01" />
+      <button type="submit">Add Product</button>
+    </form>
+    <div>
+      <input id="product-search" placeholder="Search products (name/SKU)" />
+      <button id="search-products" class="secondary">Search</button>
+      <button id="list-products" class="secondary">Refresh List</button>
     </div>
-    <button id="revenue-report" class="secondary">Get Revenue Report</button>
-    <pre id="reports-output"></pre>
+    <table id="products-table" style="display:none;">
+      <thead>
+        <tr><th>SKU</th><th>Supplier ID</th><th>Name</th><th>Category</th><th>Price</th><th>Actions</th></tr>
+      </thead>
+      <tbody id="products-tbody"></tbody>
+    </table>
+    <pre id="products-output"></pre>
+  </section>
+
+  <!-- Transactions Section -->
+  <section id="transactions">
+    <h2> Transactions</h2>
+    <form id="transaction-form">
+      <div class="form-row">
+        <input name="product_sku" placeholder="Product SKU" required />
+        <input name="id_customer" placeholder="Customer ID" required />
+      </div>
+      <div class="form-row">
+        <input name="quantity" placeholder="Quantity" type="number" required />
+        <input name="date" type="date" />
+      </div>
+      <button type="submit">Add Transaction</button>
+    </form>
+    <div>
+      <input id="transaction-search" placeholder="Search transactions (customer or product)" />
+      <button id="search-transactions" class="secondary">Search</button>
+      <button id="list-transactions" class="secondary">Refresh List</button>
+    </div>
+    <table id="transactions-table" style="display:none;">
+      <thead>
+        <tr><th>ID</th><th>SKU</th><th>Customer</th><th>Qty</th><th>Date</th><th>Actions</th></tr>
+      </thead>
+      <tbody id="transactions-tbody"></tbody>
+    </table>
+    <pre id="transactions-output"></pre>
   </section>
 
   <!-- Migration Section -->
   <section id="migration">
-    <h2>📤 Data Migration</h2>
+    <h2> Data Migration</h2>
     <form id="migration-form">
       <label>Upload CSV or Excel file:</label>
       <input type="file" name="file" accept=".csv,.xlsx" required />
